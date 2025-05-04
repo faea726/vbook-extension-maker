@@ -33,7 +33,7 @@
       },
       {
         "command": "vbook-extension-maker.installExtension",
-        "title": "Vbook ext: Install Extension"
+        "title": "Vbook Ext: Install Extension"
       }
     ],
     "menus": {
