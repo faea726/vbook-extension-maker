@@ -49,7 +49,7 @@ async function testScript() {
     script: fileContent,
     input: params?.trim().includes(",")
       ? [params.split(",").map((p) => p.trim())]
-      : [params],
+      : [params?.trim()],
   };
 
   const request = [
@@ -95,7 +95,7 @@ async function testScript() {
 
       if (result) {
         const parsed = JSON.stringify(JSON.parse(result), null, 2);
-        log(`vbook-ext: Parsed Result: ${parsed}`);
+        log(`vbook-ext: Result:\n${parsed}`);
       } else {
         log("vbook-ext: Result not found");
       }
