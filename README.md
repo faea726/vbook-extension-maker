@@ -29,10 +29,6 @@ The workspace folder should be Extension folder (has `plugin.json`, `icon.png`)
 
 Only God knows. Issue-driven development.
 
-## Release Notes
-
-[Changelog](./CHANGELOG.md)
-
 ### 0.0.1
 
 Init. Features:
