@@ -55,7 +55,7 @@ async function testScript() {
     "",
   ].join("\r\n");
 
-  runLocalServer(Number(_url.port));
+  let server = runLocalServer(Number(_url.port));
 
   const client = net.createConnection(
     { host: _url.hostname, port: Number(_url.port) },
@@ -76,6 +76,7 @@ async function testScript() {
 
   client.on("end", () => {
     log("vbook-ext: Disconnected from server");
+    server.close();
 
     const response = Buffer.concat(chunks).toString("utf-8");
     // log("vbook-ext: Response:", response);
@@ -99,6 +100,7 @@ async function testScript() {
 
   client.on("error", (err) => {
     console.error("vbook-ext: Connection error:", err.message);
+    server.close();
   });
 }
 

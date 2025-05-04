@@ -60,7 +60,7 @@ async function setURL() {
   return url.trim();
 }
 
-function runLocalServer(port: number) {
+function runLocalServer(port: number): http.Server {
   const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath + "";
   const server = http.createServer((req, res) => {
     // log("vbook-ext: Request received:", req);
@@ -106,6 +106,7 @@ function runLocalServer(port: number) {
   server.listen(port, () => {
     log(`Server listening on port ${port}`);
   });
+  return server;
 }
 
 // Logger
