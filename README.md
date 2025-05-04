@@ -29,17 +29,6 @@ The workspace folder should be Extension folder (has `plugin.json`, `icon.png`)
 
 Only God knows. Issue-driven development.
 
-### 0.0.1
-
-Init. Features:
-
-- Create Project
-- Test Script
-- Build Extension
-- Install Extension
-
----
-
 ## Following extension guidelines
 
 Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.

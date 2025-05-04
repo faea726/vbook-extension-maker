@@ -39,14 +39,14 @@ async function setURL() {
     return getValue("url");
   }
 
-  const regex = /^http:\/\/[^\/:]+:\d+$/;
-
+  const regexInput =
+    /^(https?:\/\/[a-zA-Z0-9.-]+(:\d+)?|(?:\d{1,3}\.){3}\d{1,3})$/;
   const url = await vscode.window.showInputBox({
-    prompt: "Vbook app URL",
+    prompt: "Vbook app IP",
     ignoreFocusOut: true,
     validateInput: (value) => {
       value = value.trim();
-      return !regex.test(value) ? "URL invalid" : null;
+      return !regexInput.test(value) ? "URL invalid" : null;
     },
   });
 
@@ -54,10 +54,54 @@ async function setURL() {
     setValue("url", undefined);
     return undefined;
   }
+  const normalizedUrl = normalizeHost(url);
 
-  setValue("url", url.trim());
-  log(`vbook-ext: Set URL to: ${url}`);
-  return url.trim();
+  setValue("url", normalizedUrl);
+  log(`vbook-ext: Set Vbook App IP to: ${normalizedUrl}`);
+  return normalizedUrl;
+}
+
+function normalizeHost(input: string): string {
+  const patterns = {
+    http_host_port: /\bhttp:\/\/(?:\d{1,3}\.){3}\d{1,3}:\d+\b/,
+    https_host_port: /\bhttps:\/\/(?:\d{1,3}\.){3}\d{1,3}:\d+\b/,
+    https_host: /\bhttps:\/\/(?:\d{1,3}\.){3}\d{1,3}\b/,
+    http_host: /\bhttp:\/\/(?:\d{1,3}\.){3}\d{1,3}\b/,
+    host_only: /\b(?:\d{1,3}\.){3}\d{1,3}\b/,
+  };
+
+  let matched: RegExpMatchArray | null = null;
+  let caseType: string | null = null;
+
+  for (const key in patterns) {
+    matched = input.match(patterns[key as keyof typeof patterns]);
+    if (matched) {
+      caseType = key;
+      break;
+    }
+  }
+
+  if (!matched || !caseType) {
+    return "";
+  }
+
+  const host = matched[0];
+
+  switch (caseType) {
+    case "http_host_port":
+    case "https_host_port":
+      return host;
+
+    case "http_host":
+    case "https_host":
+      return host + ":8080";
+
+    case "host_only":
+      return "http://" + host + ":8080";
+
+    default:
+      return "";
+  }
 }
 
 function runLocalServer(port: number): http.Server {

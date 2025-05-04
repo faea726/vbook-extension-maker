@@ -29,6 +29,10 @@ async function testScript() {
     url = await setURL();
   }
   const _url = new URL(url);
+  const hostParts = _url.hostname.split(".");
+  const itf = `${hostParts[0]}.${hostParts[1]}.`;
+
+  const serverPort = Number(_url.port) - 10;
 
   const params = await vscode.window.showInputBox({
     prompt: "Params for the script",
@@ -37,7 +41,7 @@ async function testScript() {
   const ext_name = vscode.workspace.workspaceFolders?.[0].name;
 
   const data = {
-    ip: getLocalIP(Number(_url.port)),
+    ip: getLocalIP(itf, serverPort),
     root: `${ext_name}/src`,
     language: "javascript",
     script: fileContent,
@@ -55,7 +59,7 @@ async function testScript() {
     "",
   ].join("\r\n");
 
-  let server = runLocalServer(Number(_url.port));
+  let server = runLocalServer(serverPort);
 
   const client = net.createConnection(
     { host: _url.hostname, port: Number(_url.port) },
@@ -104,18 +108,14 @@ async function testScript() {
   });
 }
 
-function getLocalIP(port: number): string | null {
+function getLocalIP(itf: string, port: number): string | null {
   const interfaces = os.networkInterfaces();
 
   for (const name of Object.keys(interfaces)) {
     for (const iface of interfaces[name]!) {
       const ip = iface.address;
 
-      if (
-        iface.family === "IPv4" &&
-        !iface.internal &&
-        ip.startsWith("192.168.")
-      ) {
+      if (iface.family === "IPv4" && !iface.internal && ip.startsWith(itf)) {
         const localIp = `http://${ip}:${port}`;
         log(`vbook-ext: Local IP: ${localIp}`);
         return localIp;
