@@ -7,10 +7,11 @@ import {
   setURL,
   getValue,
   runLocalServer,
+  log,
 } from "./helperModules";
 
 async function testScript() {
-  console.log("vbook-ext: testScript");
+  log("vbook-ext: testScript");
   if (!checkPluginJson()) {
     vscode.window.showWarningMessage("Invalid workspace.");
     return;
@@ -59,9 +60,7 @@ async function testScript() {
   const client = net.createConnection(
     { host: _url.hostname, port: Number(_url.port) },
     () => {
-      console.log(
-        `vbook-ext: Connected to vbook: ${_url.hostname}:${_url.port}`
-      );
+      log(`vbook-ext: Connected to vbook: ${_url.hostname}:${_url.port}`);
       client.write(request);
     }
   );
@@ -76,10 +75,10 @@ async function testScript() {
   });
 
   client.on("end", () => {
-    console.log("vbook-ext: Disconnected from server");
+    log("vbook-ext: Disconnected from server");
 
     const response = Buffer.concat(chunks).toString("utf-8");
-    // console.log("vbook-ext: Response:", response);
+    // log("vbook-ext: Response:", response);
     const bodyStart = response.indexOf("{");
     const body = response.slice(bodyStart);
 
@@ -88,10 +87,10 @@ async function testScript() {
       const result = json.result;
 
       if (result) {
-        const parsed = JSON.parse(result);
-        console.log("vbook-ext: Parsed Result:", parsed);
+        const parsed = JSON.stringify(JSON.parse(result), null, 2);
+        log(`vbook-ext: Parsed Result: ${parsed}`);
       } else {
-        console.log("vbook-ext: Result not found");
+        log("vbook-ext: Result not found");
       }
     } catch (err) {
       console.error("vbook-ext: Failed to parse response:", err);
@@ -118,7 +117,7 @@ function getLocalIP(port: number): string | null {
           ip.match(/^172\.(1[6-9]|2\d|3[0-1])\./))
       ) {
         const localIp = `http://${ip}:${port}`;
-        console.log("vbook-ext: Local IP:", localIp);
+        log(`vbook-ext: Local IP: ${localIp}`);
         return localIp;
       }
     }

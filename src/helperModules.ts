@@ -56,14 +56,14 @@ async function setURL() {
   }
 
   setValue("url", url.trim());
-  vscode.window.showInformationMessage(`Set URL to: ${url}`);
+  log(`Set URL to: ${url}`);
   return url.trim();
 }
 
 function runLocalServer(port: number) {
   const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath + "";
   const server = http.createServer((req, res) => {
-    // console.log("vbook-ext: Request received:", req);
+    // log("vbook-ext: Request received:", req);
     const SRC_PATH = path.dirname(rootPath);
 
     const url = new URL(req.url!, `http://${req.headers.host}`);
@@ -81,7 +81,7 @@ function runLocalServer(port: number) {
     }
 
     const filePath = path.join(SRC_PATH, root, file);
-    // console.log("vbook-ext: filePath:", filePath);
+    // log("vbook-ext: filePath:", filePath);
 
     fs.readFile(filePath, "utf8", (_, data) => {
       if (_) {
@@ -104,8 +104,29 @@ function runLocalServer(port: number) {
   });
 
   server.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+    log(`Server listening on port ${port}`);
   });
 }
 
-export { checkPluginJson, setURL, getValue, runLocalServer };
+// Logger
+let outputChannel: vscode.OutputChannel;
+function getOutputChannel(): vscode.OutputChannel {
+  if (!outputChannel) {
+    outputChannel = vscode.window.createOutputChannel("Vbook Extension Maker");
+  }
+  outputChannel.show(true);
+  return outputChannel;
+}
+
+function log(message: string) {
+  getOutputChannel().appendLine(message);
+}
+
+export {
+  checkPluginJson,
+  setURL,
+  getValue,
+  runLocalServer,
+  log,
+  getOutputChannel,
+};

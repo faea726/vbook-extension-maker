@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import { setURL, getValue, checkPluginJson } from "./helperModules";
+import { setURL, getValue, checkPluginJson, log } from "./helperModules";
 
 async function installExtension() {
-  console.log("vbook-ext: installExtension");
+  log("vbook-ext: installExtension");
   const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   if (!rootPath || !checkPluginJson()) {
     vscode.window.showWarningMessage("Inavlid workspace.");
@@ -12,7 +12,7 @@ async function installExtension() {
   }
 
   const data = preparePluginData(rootPath);
-  console.log("vbook-ext: data:", data);
+  // log("vbook-ext: data:", data);
 
   var url: string;
   url = getValue("url");
@@ -21,7 +21,7 @@ async function installExtension() {
   }
 
   try {
-    console.log(`vbook-ext: Connect to: ${url}/install`);
+    log(`vbook-ext: Connect to: ${url}/install`);
     await fetch(`${url}/install`, {
       method: "GET",
       headers: {
@@ -29,7 +29,7 @@ async function installExtension() {
       },
     });
   } catch (error) {
-    console.log("vbook-ext: done installation process.");
+    log("vbook-ext: done installation process.");
   }
 }
 
@@ -61,7 +61,6 @@ function preparePluginData(pluginDir: string): any {
   for (const script of pluginScripts) {
     const scriptPath = path.join(pluginDir, "src", script);
     if (fs.existsSync(scriptPath)) {
-      console.log(script);
       data.data[script] = fs.readFileSync(scriptPath, "utf-8");
     }
   }

@@ -2,9 +2,10 @@ import * as fs from "fs";
 import * as path from "path";
 import archiver = require("archiver");
 import * as vscode from "vscode";
+import { log } from "./helperModules";
 
 function buildExtension() {
-  console.log("vbook-ext: buildExtension");
+  log("vbook-ext: buildExtension");
   const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   if (!rootPath) {
     vscode.window.showWarningMessage("No workspace found.");
@@ -31,7 +32,7 @@ function buildExtension() {
   const archive = archiver("zip", { zlib: { level: 9 } });
 
   output.on("close", () => {
-    console.log(`vbook-ext: plugin.zip created: ${archive.pointer()} bytes`);
+    log(`vbook-ext: plugin.zip created: ${archive.pointer()} bytes`);
   });
   archive.on("error", (err) => {
     throw err;

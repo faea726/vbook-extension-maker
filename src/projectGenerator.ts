@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+import { log } from "./helperModules";
 
 async function generateProject() {
-  console.log("vbook-ext: generateProject");
+  log("vbook-ext: generateProject");
   const projectName = await vscode.window.showInputBox({
     prompt: "Enter a name for your new project",
     ignoreFocusOut: true,
