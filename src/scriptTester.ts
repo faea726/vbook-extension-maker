@@ -38,11 +38,13 @@ async function testScript() {
     prompt: "Params for the script",
     ignoreFocusOut: true,
   });
-  const ext_name = vscode.workspace.workspaceFolders?.[0].name;
+  log(`vbook-ext: Params: ${params}`);
+
+  const extName = vscode.workspace.workspaceFolders?.[0].name;
 
   const data = {
     ip: getLocalIP(itf, serverPort),
-    root: `${ext_name}/src`,
+    root: `${extName}/src`,
     language: "javascript",
     script: fileContent,
     input: params?.trim().includes(",")
@@ -98,12 +100,12 @@ async function testScript() {
         log("vbook-ext: Result not found");
       }
     } catch (err) {
-      console.error("vbook-ext: Failed to parse response:", err);
+      log(`vbook-ext: Failed to parse response: ${err}`);
     }
   });
 
   client.on("error", (err) => {
-    console.error("vbook-ext: Connection error:", err.message);
+    log(`vbook-ext: Connection error: ${err.message} `);
     server.close();
   });
 }
