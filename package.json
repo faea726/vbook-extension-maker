@@ -2,7 +2,7 @@
   "name": "vbook-extension-maker",
   "displayName": "Vbook Extension Maker",
   "description": "Help make Vbook extension on VsCode",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "Noir",
   "repository": {
     "type": "git",
@@ -28,10 +28,6 @@
         "title": "Vbook Ext: Test Script"
       },
       {
-        "command": "vbook-extension-maker.setURL",
-        "title": "Vbook Ext: Set URL"
-      },
-      {
         "command": "vbook-extension-maker.buildExtension",
         "title": "Vbook Ext: Build Extension"
       },
@@ -42,11 +38,6 @@
     ],
     "menus": {
       "editor/context": [
-        {
-          "command": "vbook-extension-maker.setURL",
-          "group": "navigation",
-          "when": "editorTextFocus && resourceLangId == javascript"
-        },
         {
           "command": "vbook-extension-maker.testScript",
           "group": "navigation",
