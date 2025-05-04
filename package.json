@@ -1,0 +1,91 @@
+{
+  "name": "vbook-extension-maker",
+  "displayName": "Vbook Extension Maker",
+  "description": "Help make Vbook extension on VsCode",
+  "version": "0.0.1",
+  "publisher": "faea726",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/faea726/vbook-extension-maker"
+  },
+  "icon": "./icon.png",
+  "engines": {
+    "vscode": "^1.99.0"
+  },
+  "categories": [
+    "Debuggers"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "vbook-extension-maker.createProject",
+        "title": "Vbook Ext: Create Project"
+      },
+      {
+        "command": "vbook-extension-maker.testScript",
+        "title": "Vbook Ext: Test Script"
+      },
+      {
+        "command": "vbook-extension-maker.setURL",
+        "title": "Vbook Ext: Set URL"
+      },
+      {
+        "command": "vbook-extension-maker.buildExtension",
+        "title": "Vbook Ext: Build Extension"
+      },
+      {
+        "command": "vbook-extension-maker.installExtension",
+        "title": "Vbook ext: Install Extension"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "vbook-extension-maker.setURL",
+          "group": "navigation",
+          "when": "editorTextFocus && resourceLangId == javascript"
+        },
+        {
+          "command": "vbook-extension-maker.testScript",
+          "group": "navigation",
+          "when": "editorTextFocus && resourceLangId == javascript"
+        },
+        {
+          "command": "vbook-extension-maker.buildExtension",
+          "group": "navigation",
+          "when": "editorTextFocus && resourceLangId == javascript"
+        },
+        {
+          "command": "vbook-extension-maker.installExtension",
+          "group": "navigation",
+          "when": "editorTextFocus && resourceLangId == javascript"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.3",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.99.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "name": "<Tên của extension>",
+    "author": "<Tên tác giả>",
+    "version": 1,
+    "source": "<Địa chỉ trang nguồn>",
+    "regexp": "<RegExp khớp với URL của trang truyện>",
+    "description": "<Mô tả về extension>",
+    "locale": "<Quốc gia áp dụng của extension - Ex: vi_VN, en_US, zh_CN>",
+    "tag": "<Thêm nsfw nếu là trang 18+>",
+    "type": "<Thể loại của extension, comic/novel/chinese_novel>"
+  },
+  "script": {
+    "home": "<Tên script trang home (không bắt buộc)>",
+    "genre": "<Tên script danh sách thể loại, nếu không có thì không thêm>",
+    "detail": "<Tên script thông tin truyện (bắt buộc)>",
+    "search": "<Tên script tìm kiếm truyện (không bắt buộc)>",
+    "page": "<Tên script danh sách trang của mục luc (không bắt buộc)>",
+    "toc": "<Tên script mục lục (bắt buộc)>",
+    "chap": "<Tên script nội dung chương (bắt buộc)>"
+  }
+}
