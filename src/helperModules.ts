@@ -56,7 +56,7 @@ async function setURL() {
   }
 
   setValue("url", url.trim());
-  log(`Set URL to: ${url}`);
+  log(`vbook-ext: Set URL to: ${url}`);
   return url.trim();
 }
 
@@ -104,7 +104,7 @@ function runLocalServer(port: number): http.Server {
   });
 
   server.listen(port, () => {
-    log(`Server listening on port ${port}`);
+    log(`vbook-ext: Server listening on port ${port}`);
   });
   return server;
 }
