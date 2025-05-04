@@ -5,6 +5,7 @@ All notable changes to the "vbook-extension-maker" extension will be documented 
 ## 0.0.2
 
 - Remove `Set URL` function.
+- Fix connection interface
 - Set buffer input for each script. (on-going)
 
 ## 0.0.1

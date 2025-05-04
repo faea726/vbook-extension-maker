@@ -114,9 +114,7 @@ function getLocalIP(port: number): string | null {
       if (
         iface.family === "IPv4" &&
         !iface.internal &&
-        (ip.startsWith("192.168.") ||
-          ip.startsWith("10.") ||
-          ip.match(/^172\.(1[6-9]|2\d|3[0-1])\./))
+        ip.startsWith("192.168.")
       ) {
         const localIp = `http://${ip}:${port}`;
         log(`vbook-ext: Local IP: ${localIp}`);
