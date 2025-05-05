@@ -5,6 +5,7 @@ All notable changes to the "vbook-extension-maker" extension will be documented 
 ## 0.1.0
 
 - Show logs (Console.log)
+- Handle exceptions.
 
 ## 0.0.3-1
 
