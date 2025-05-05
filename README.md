@@ -16,9 +16,6 @@ This extension created to make Extension on VsCode. A cross-platform approach.
 - **Install extension**:
   Install extension to Vbook app.
 
-- **Set URL**:
-  Set URL of Vbook app.
-
 ## Requirements
 
 Always leave 1 script open when test extension.
