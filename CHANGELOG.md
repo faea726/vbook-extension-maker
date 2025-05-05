@@ -2,9 +2,9 @@
 
 All notable changes to the "vbook-extension-maker" extension will be documented in this file.
 
-## 0.1
+## 0.1.0
 
-- So logs (Console.log)
+- Show logs (Console.log)
 
 ## 0.0.3-1
 
