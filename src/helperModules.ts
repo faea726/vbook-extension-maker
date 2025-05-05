@@ -5,13 +5,13 @@ import * as vscode from "vscode";
 import * as querystring from "querystring";
 
 // Check if plugin.json exists
-function checkPluginJson(): boolean {
+function pluginJsonExist(inputScriptPath: string): boolean {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders || workspaceFolders.length === 0) {
     return false;
   }
 
-  const rootPath = workspaceFolders[0].uri.fsPath;
+  const rootPath = path.resolve(inputScriptPath, "../../");
   const pluginJsonPath = path.join(rootPath, "plugin.json");
 
   return fs.existsSync(pluginJsonPath);
@@ -20,16 +20,26 @@ function checkPluginJson(): boolean {
 // Manage temporary data
 let tempData: Record<string, any> = {};
 
-function setValue(key: string, value: any) {
-  const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath + "";
+function setValue(key: string, value: any, scriptPath: string) {
+  if (!pluginJsonExist(scriptPath)) {
+    vscode.window.showErrorMessage("Invalid workspace.");
+    return null;
+  }
+
+  const rootPath = path.resolve(scriptPath, "../../");
   const tempPath = path.join(rootPath, "test.json");
 
   tempData[key] = value;
   fs.writeFileSync(tempPath, JSON.stringify(tempData, null, 2), "utf-8");
 }
 
-function getValue(key: string): any {
-  const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath + "";
+function getValue(key: string, scriptPath: string): any {
+  if (!pluginJsonExist(scriptPath)) {
+    vscode.window.showErrorMessage("Invalid workspace.");
+    return null;
+  }
+
+  const rootPath = path.resolve(scriptPath, "../../");
   const tempPath = path.join(rootPath, "test.json");
 
   if (!fs.existsSync(tempPath)) {
@@ -46,8 +56,8 @@ function getValue(key: string): any {
   return tempData[key];
 }
 
-async function setURL() {
-  if (!checkPluginJson()) {
+async function setURL(scriptPath: string) {
+  if (!pluginJsonExist(scriptPath)) {
     vscode.window.showWarningMessage("Inavlid workspace.");
     return;
   }
@@ -57,7 +67,7 @@ async function setURL() {
   const url = await vscode.window.showInputBox({
     prompt: "Vbook app IP",
     ignoreFocusOut: true,
-    value: getValue("appIP"),
+    value: getValue("appIP", scriptPath),
     placeHolder: "http://192.168.1.7:8080",
     validateInput: (value) => {
       value = value.trim();
@@ -70,13 +80,13 @@ async function setURL() {
   }
   const normalizedUrl = normalizeHost(url);
 
-  setValue("appIP", normalizedUrl);
+  setValue("appIP", normalizedUrl, scriptPath);
   log(`vbook-ext: Set Vbook App IP to: ${normalizedUrl}`);
   return normalizedUrl;
 }
 
-async function setParams(scriptName: string) {
-  if (!checkPluginJson()) {
+async function setParams(scriptName: string, scriptPath: string) {
+  if (!pluginJsonExist(scriptPath)) {
     vscode.window.showWarningMessage("Inavlid workspace.");
     return;
   }
@@ -84,11 +94,11 @@ async function setParams(scriptName: string) {
   const params = await vscode.window.showInputBox({
     prompt: "Params for script",
     ignoreFocusOut: true,
-    value: getValue(scriptName),
+    value: getValue(scriptName, scriptPath),
     placeHolder: "param_1, param_2,...",
   });
 
-  setValue(scriptName, params);
+  setValue(scriptName, params, scriptPath);
   return params;
 }
 
@@ -135,12 +145,10 @@ function normalizeHost(input: string): string {
   }
 }
 
-function runLocalServer(port: number): http.Server {
-  const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath + "";
+function runLocalServer(port: number, scriptPath: string): http.Server {
+  const SRC_PATH = path.resolve(scriptPath, "../../");
+  // log(`vbook-ext: SRC_PATH: ${SRC_PATH}`);
   const server = http.createServer((req, res) => {
-    // log("vbook-ext: Request received:", req);
-    const SRC_PATH = path.dirname(rootPath);
-
     const url = new URL(req.url!, `http://${req.headers.host}`);
     const queryString = url.searchParams.toString();
 
@@ -158,8 +166,8 @@ function runLocalServer(port: number): http.Server {
     const filePath = path.join(SRC_PATH, root, file);
     // log("vbook-ext: filePath:", filePath);
 
-    fs.readFile(filePath, "utf8", (_, data) => {
-      if (_) {
+    fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) {
         res.writeHead(500, { "Content-Type": "text/plain" });
         res.end("Error reading the file.");
         return;
@@ -199,7 +207,7 @@ function log(message: string) {
 }
 
 export {
-  checkPluginJson,
+  pluginJsonExist,
   setURL,
   setParams,
   runLocalServer,

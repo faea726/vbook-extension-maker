@@ -6,11 +6,15 @@ import { log } from "./helperModules";
 
 function buildExtension() {
   log("vbook-ext: buildExtension");
-  const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-  if (!rootPath) {
-    vscode.window.showWarningMessage("No workspace found.");
-    return;
+
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showWarningMessage("Please leave a script open!");
+    return null;
   }
+
+  const scriptPath = editor.document.fileName;
+  const rootPath = path.resolve(scriptPath, "../../");
 
   // Validate files exist
   const plugin_json_path = path.join(rootPath, "plugin.json");

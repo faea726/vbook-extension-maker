@@ -1,20 +1,28 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import { setURL, checkPluginJson, log } from "./helperModules";
+import { setURL, pluginJsonExist, log } from "./helperModules";
 
 async function installExtension() {
   log("vbook-ext: installExtension");
-  const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-  if (!rootPath || !checkPluginJson()) {
-    vscode.window.showWarningMessage("Inavlid workspace.");
+
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showWarningMessage("Please leave a script open!");
+    return null;
+  }
+
+  const scriptPath = editor.document.fileName;
+  const rootPath = path.resolve(scriptPath, "../../");
+  if (!pluginJsonExist(scriptPath)) {
+    vscode.window.showErrorMessage("Invalid workspace.");
     return;
   }
 
   const data = preparePluginData(rootPath);
   // log("vbook-ext: data:", data);
 
-  const appIP = String(await setURL());
+  const appIP = String(await setURL(scriptPath));
   if (!appIP) {
     vscode.window.showErrorMessage("IP not set");
     return;

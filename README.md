@@ -21,9 +21,9 @@ This extension created to make Extension on VsCode. A cross-platform approach.
 
 ## Requirements
 
-Vbook App running developer mode.
+Always leave 1 script open when test extension.
 
-The workspace folder should be Extension folder (has `plugin.json`, `icon.png`)
+Vbook App running developer mode.
 
 Work best with LAN.
 

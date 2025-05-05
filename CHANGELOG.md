@@ -5,6 +5,7 @@ All notable changes to the "vbook-extension-maker" extension will be documented 
 ## 0.0.3
 
 - Save previous input
+- Relative root path
 
 ## 0.0.2
 

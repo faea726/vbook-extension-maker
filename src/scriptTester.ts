@@ -4,7 +4,7 @@ import * as os from "os";
 import { URL } from "url";
 import * as path from "path";
 import {
-  checkPluginJson,
+  pluginJsonExist,
   setURL,
   runLocalServer,
   log,
@@ -13,10 +13,6 @@ import {
 
 async function testScript() {
   log("vbook-ext: testScript");
-  if (!checkPluginJson()) {
-    vscode.window.showWarningMessage("Invalid workspace.");
-    return;
-  }
 
   const fileData = getOpeningFileContent();
   if (!fileData) {
@@ -24,7 +20,12 @@ async function testScript() {
     return;
   }
 
-  const appIP = String(await setURL());
+  if (!pluginJsonExist(fileData.path)) {
+    vscode.window.showWarningMessage("Invalid workspace.");
+    return;
+  }
+
+  const appIP = String(await setURL(fileData.path));
   if (!appIP) {
     vscode.window.showErrorMessage("IP not set");
     return;
@@ -36,7 +37,7 @@ async function testScript() {
 
   const serverPort = Number(_url.port) - 10;
 
-  const params = await setParams(fileData.name);
+  const params = await setParams(fileData.name, fileData.path);
   log(`vbook-ext: Params: ${params}`);
 
   const extName = vscode.workspace.workspaceFolders?.[0].name;
@@ -59,11 +60,10 @@ async function testScript() {
     "",
     "",
   ].join("\r\n");
-  // log(request);
+
   // return;
 
-  let server = runLocalServer(serverPort);
-
+  let server = runLocalServer(serverPort, fileData.path);
   const client = net.createConnection(
     { host: _url.hostname, port: Number(_url.port) },
     () => {
@@ -129,13 +129,18 @@ function getLocalIP(itf: string, port: number): string | null {
   return null;
 }
 
-function getOpeningFileContent(): { name: string; content: string } | null {
+function getOpeningFileContent(): {
+  name: string;
+  path: string;
+  content: string;
+} | null {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
     return null;
   }
   return {
     name: path.basename(editor.document.fileName),
+    path: editor.document.fileName,
     content: editor.document.getText(),
   };
 }
