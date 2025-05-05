@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import { setURL, getValue, checkPluginJson, log } from "./helperModules";
+import { setURL, checkPluginJson, log } from "./helperModules";
 
 async function installExtension() {
   log("vbook-ext: installExtension");
@@ -14,15 +14,15 @@ async function installExtension() {
   const data = preparePluginData(rootPath);
   // log("vbook-ext: data:", data);
 
-  var url: string;
-  url = getValue("url");
-  if (!url) {
-    url = await setURL();
+  const appIP = String(await setURL());
+  if (!appIP) {
+    vscode.window.showErrorMessage("IP not set");
+    return;
   }
 
   try {
-    log(`vbook-ext: Connect to: ${url}/install`);
-    await fetch(`${url}/install`, {
+    log(`vbook-ext: Connect to: ${appIP}/install`);
+    await fetch(`${appIP}/install`, {
       method: "GET",
       headers: {
         data: Buffer.from(JSON.stringify(data)).toString("base64"),

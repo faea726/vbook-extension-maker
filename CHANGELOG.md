@@ -2,6 +2,10 @@
 
 All notable changes to the "vbook-extension-maker" extension will be documented in this file.
 
+## 0.0.3
+
+- Save previous input
+
 ## 0.0.2
 
 - Remove `Set URL` function.

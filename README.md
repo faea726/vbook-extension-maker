@@ -25,9 +25,11 @@ Vbook App running developer mode.
 
 The workspace folder should be Extension folder (has `plugin.json`, `icon.png`)
 
+Work best with LAN.
+
 ## Known Issues
 
-Only God knows. Issue-driven development.
+TCP connection issue.
 
 ## Following extension guidelines
 
@@ -38,5 +40,7 @@ Ensure that you've read through the extensions guidelines and follow the best pr
 ## Contribution
 
 Open a pull request. That easy.
+
+Thank [ngatngay](https://github.com/pmtpro) for the PHP references.
 
 **Enjoy!**

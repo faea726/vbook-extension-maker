@@ -2,11 +2,11 @@
   "name": "vbook-extension-maker",
   "displayName": "Vbook Extension Maker",
   "description": "Help make Vbook extension on VsCode",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "Noir",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Noir/vbook-extension-maker"
+    "url": "https://github.com/faea726/vbook-extension-maker"
   },
   "icon": "icon.png",
   "engines": {

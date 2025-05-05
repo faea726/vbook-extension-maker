@@ -2,12 +2,13 @@ import * as vscode from "vscode";
 import * as net from "net";
 import * as os from "os";
 import { URL } from "url";
+import * as path from "path";
 import {
   checkPluginJson,
   setURL,
-  getValue,
   runLocalServer,
   log,
+  setParams,
 } from "./helperModules";
 
 async function testScript() {
@@ -17,27 +18,25 @@ async function testScript() {
     return;
   }
 
-  const fileContent = getOpeningFileContent();
-  if (!fileContent) {
+  const fileData = getOpeningFileContent();
+  if (!fileData) {
     vscode.window.showInformationMessage("No file opened!");
     return;
   }
 
-  var url: string;
-  url = getValue("url");
-  if (!url) {
-    url = await setURL();
+  const appIP = String(await setURL());
+  if (!appIP) {
+    vscode.window.showErrorMessage("IP not set");
+    return;
   }
-  const _url = new URL(url);
+
+  const _url = new URL(appIP);
   const hostParts = _url.hostname.split(".");
   const itf = `${hostParts[0]}.${hostParts[1]}.`;
 
   const serverPort = Number(_url.port) - 10;
 
-  const params = await vscode.window.showInputBox({
-    prompt: "Params for the script",
-    ignoreFocusOut: true,
-  });
+  const params = await setParams(fileData.name);
   log(`vbook-ext: Params: ${params}`);
 
   const extName = vscode.workspace.workspaceFolders?.[0].name;
@@ -46,7 +45,7 @@ async function testScript() {
     ip: getLocalIP(itf, serverPort),
     root: `${extName}/src`,
     language: "javascript",
-    script: fileContent,
+    script: fileData.content,
     input: params?.trim().includes(",")
       ? [params.split(",").map((p) => p.trim())]
       : [params?.trim()],
@@ -60,6 +59,8 @@ async function testScript() {
     "",
     "",
   ].join("\r\n");
+  // log(request);
+  // return;
 
   let server = runLocalServer(serverPort);
 
@@ -128,12 +129,15 @@ function getLocalIP(itf: string, port: number): string | null {
   return null;
 }
 
-function getOpeningFileContent(): string {
+function getOpeningFileContent(): { name: string; content: string } | null {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    return "";
+    return null;
   }
-  return editor.document.getText();
+  return {
+    name: path.basename(editor.document.fileName),
+    content: editor.document.getText(),
+  };
 }
 
 export { testScript };
