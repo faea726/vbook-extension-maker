@@ -1,6 +1,28 @@
 # Vbook Extension Maker
 
-This extension created to make Extension on VsCode. A cross-platform approach.
+This VSCode extension created to make [Vbook Extension](https://github.com/Darkrai9x/vbook-extensions) on VSCode. A cross-platform approach.
+
+## Installation
+
+Open VSCode, choose `Install from VSIX...`, and pick installation file from explorer.
+
+![installation](images/install.png)
+
+## Usage
+
+Open at least 1 script, right click on editor to use commands.
+
+![usage](images/usage.png)
+
+_Other method: `Ctrl+Shift+P`_
+
+## Requirements
+
+Always leave at least 1 script open when test extension.
+
+Vbook App running developer mode.
+
+Work best with LAN.
 
 ## Features
 
@@ -16,23 +38,9 @@ This extension created to make Extension on VsCode. A cross-platform approach.
 - **Install extension**:
   Install extension to Vbook app.
 
-## Requirements
-
-Always leave 1 script open when test extension.
-
-Vbook App running developer mode.
-
-Work best with LAN.
-
 ## Known Issues
 
 TCP connection issue.
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
 
 ## Contribution
 
