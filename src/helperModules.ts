@@ -19,14 +19,31 @@ function checkPluginJson(): boolean {
 
 // Manage temporary data
 let tempData: Record<string, any> = {};
+
 function setValue(key: string, value: any) {
+  const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath + "";
+  const tempPath = path.join(rootPath, "test.json");
+
   tempData[key] = value;
+  fs.writeFileSync(tempPath, JSON.stringify(tempData, null, 2), "utf-8");
 }
+
 function getValue(key: string): any {
+  const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath + "";
+  const tempPath = path.join(rootPath, "test.json");
+
+  if (!fs.existsSync(tempPath)) {
+    return null;
+  }
+
+  const data = fs.readFileSync(tempPath, "utf-8");
+  tempData = JSON.parse(data);
+
+  if (!tempData[key]) {
+    return null;
+  }
+
   return tempData[key];
-}
-function resetStore() {
-  tempData = {};
 }
 
 async function setURL() {
@@ -35,15 +52,13 @@ async function setURL() {
     return;
   }
 
-  if (getValue("url")) {
-    return getValue("url");
-  }
-
   const regexInput =
     /^(https?:\/\/[a-zA-Z0-9.-]+(:\d+)?|(?:\d{1,3}\.){3}\d{1,3})$/;
   const url = await vscode.window.showInputBox({
     prompt: "Vbook app IP",
     ignoreFocusOut: true,
+    value: getValue("appIP"),
+    placeHolder: "http://192.168.1.7:8080",
     validateInput: (value) => {
       value = value.trim();
       return !regexInput.test(value) ? "URL invalid" : null;
@@ -51,14 +66,30 @@ async function setURL() {
   });
 
   if (!url) {
-    setValue("url", undefined);
-    return undefined;
+    return null;
   }
   const normalizedUrl = normalizeHost(url);
 
-  setValue("url", normalizedUrl);
+  setValue("appIP", normalizedUrl);
   log(`vbook-ext: Set Vbook App IP to: ${normalizedUrl}`);
   return normalizedUrl;
+}
+
+async function setParams(scriptName: string) {
+  if (!checkPluginJson()) {
+    vscode.window.showWarningMessage("Inavlid workspace.");
+    return;
+  }
+
+  const params = await vscode.window.showInputBox({
+    prompt: "Params for script",
+    ignoreFocusOut: true,
+    value: getValue(scriptName),
+    placeHolder: "param_1, param_2,...",
+  });
+
+  setValue(scriptName, params);
+  return params;
 }
 
 function normalizeHost(input: string): string {
@@ -170,7 +201,7 @@ function log(message: string) {
 export {
   checkPluginJson,
   setURL,
-  getValue,
+  setParams,
   runLocalServer,
   log,
   getOutputChannel,
