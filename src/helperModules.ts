@@ -81,7 +81,7 @@ async function setURL(scriptPath: string) {
   const normalizedUrl = normalizeHost(url);
 
   setValue("appIP", normalizedUrl, scriptPath);
-  log(`vbook-ext: Set Vbook App IP to: ${normalizedUrl}`);
+  log(`vbook-ext: Vbook App IP: ${normalizedUrl}`);
   return normalizedUrl;
 }
 
@@ -146,8 +146,7 @@ function normalizeHost(input: string): string {
 }
 
 function runLocalServer(port: number, scriptPath: string): http.Server {
-  const SRC_PATH = path.resolve(scriptPath, "../../");
-  // log(`vbook-ext: SRC_PATH: ${SRC_PATH}`);
+  const SRC_PATH = path.resolve(scriptPath, "../../../");
   const server = http.createServer((req, res) => {
     const url = new URL(req.url!, `http://${req.headers.host}`);
     const queryString = url.searchParams.toString();
@@ -164,7 +163,7 @@ function runLocalServer(port: number, scriptPath: string): http.Server {
     }
 
     const filePath = path.join(SRC_PATH, root, file);
-    // log("vbook-ext: filePath:", filePath);
+    // log(`vbook-ext: Serving file: ${filePath}`);
 
     fs.readFile(filePath, "utf8", (err, data) => {
       if (err) {
@@ -206,6 +205,43 @@ function log(message: string) {
   getOutputChannel().appendLine(message);
 }
 
+function parseHttpResponse(response: string): {
+  statusLine: string;
+  headers: Record<string, string>;
+  body: any;
+} {
+  // Split headers and body using CRLF (Windows-style line breaks)
+  const [headerPart, bodyPart] = response.split(/\r?\n\r?\n/, 2);
+
+  const headerLines = headerPart.split(/\r?\n/);
+  const statusLine = headerLines[0];
+  const headers: Record<string, string> = {};
+
+  for (let i = 1; i < headerLines.length; i++) {
+    const line = headerLines[i];
+    const [key, value] = line.split(/:\s*/, 2);
+    if (key && value !== undefined) {
+      headers[key] = value;
+    }
+  }
+
+  let body: any;
+  try {
+    body = JSON.parse(bodyPart);
+  } catch (e) {
+    body = {
+      error: "Invalid JSON body",
+      details: e instanceof Error ? e.message : String(e),
+    };
+  }
+
+  return {
+    statusLine,
+    headers,
+    body,
+  };
+}
+
 export {
   pluginJsonExist,
   setURL,
@@ -213,4 +249,5 @@ export {
   runLocalServer,
   log,
   getOutputChannel,
+  parseHttpResponse,
 };

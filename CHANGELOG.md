@@ -2,10 +2,17 @@
 
 All notable changes to the "vbook-extension-maker" extension will be documented in this file.
 
+## 0.1
+
+- So logs (Console.log)
+
+## 0.0.3-1
+
+- Relative root path
+
 ## 0.0.3
 
 - Save previous input
-- Relative root path
 
 ## 0.0.2
 

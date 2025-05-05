@@ -9,6 +9,7 @@ import {
   runLocalServer,
   log,
   setParams,
+  parseHttpResponse,
 } from "./helperModules";
 
 async function testScript() {
@@ -40,7 +41,8 @@ async function testScript() {
   const params = await setParams(fileData.name, fileData.path);
   log(`vbook-ext: Params: ${params}`);
 
-  const extName = vscode.workspace.workspaceFolders?.[0].name;
+  const extName = path.basename(path.resolve(fileData.path, "../../"));
+  // log(`vbook-ext: extName: ${extName}`);
 
   const data = {
     ip: getLocalIP(itf, serverPort),
@@ -85,23 +87,22 @@ async function testScript() {
     log("vbook-ext: Disconnected from server");
     server.close();
 
-    const response = Buffer.concat(chunks).toString("utf-8");
-    // log("vbook-ext: Response:", response);
-    const bodyStart = response.indexOf("{");
-    const body = response.slice(bodyStart);
-
+    const rspStr = Buffer.concat(chunks).toString("utf-8");
     try {
-      const json = JSON.parse(body);
-      const result = json.result;
-
-      if (result) {
-        const parsed = JSON.stringify(JSON.parse(result), null, 2);
-        log(`vbook-ext: Result:\n${parsed}`);
-      } else {
-        log("vbook-ext: Result not found");
+      const rsp = parseHttpResponse(rspStr);
+      if (rsp.body.status != 0) {
+        log(`vbook-ext: ${rsp.body}`);
       }
+
+      log(
+        "\nvbook-ext: Response:\n" +
+          `status: ${rsp.body.status}\n` +
+          `log: ${rsp.body.log}\n` +
+          `result: ${JSON.stringify(JSON.parse(rsp.body.result), null, 2)}`
+      );
     } catch (err) {
-      log(`vbook-ext: Failed to parse response: ${err}`);
+      log(`vbook-ext: ${err}`);
+      log(`vbook-ext: Response:\n\n${rspStr}`);
     }
   });
 
