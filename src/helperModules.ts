@@ -14,7 +14,10 @@ function pluginJsonExist(inputScriptPath: string): boolean {
   const rootPath = path.resolve(inputScriptPath, "../../");
   const pluginJsonPath = path.join(rootPath, "plugin.json");
 
-  return fs.existsSync(pluginJsonPath);
+  return (
+    fs.existsSync(pluginJsonPath) &&
+    path.basename(path.dirname(inputScriptPath)) === "src"
+  );
 }
 
 // Manage temporary data

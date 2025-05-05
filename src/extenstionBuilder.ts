@@ -5,7 +5,7 @@ import * as vscode from "vscode";
 import { log } from "./helperModules";
 
 function buildExtension() {
-  log("vbook-ext: buildExtension");
+  log("\nvbook-ext: buildExtension");
 
   const editor = vscode.window.activeTextEditor;
   if (!editor) {

@@ -4,7 +4,7 @@ import * as path from "path";
 import { setURL, pluginJsonExist, log } from "./helperModules";
 
 async function installExtension() {
-  log("vbook-ext: installExtension");
+  log("\nvbook-ext: installExtension");
 
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
@@ -29,7 +29,7 @@ async function installExtension() {
   }
 
   try {
-    log(`vbook-ext: Connect to: ${appIP}/install`);
+    log(`vbook-ext: Installing to: ${appIP}`);
     await fetch(`${appIP}/install`, {
       method: "GET",
       headers: {

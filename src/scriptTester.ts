@@ -13,7 +13,7 @@ import {
 } from "./helperModules";
 
 async function testScript() {
-  log("vbook-ext: testScript");
+  log("\nvbook-ext: testScript");
 
   const fileData = getOpeningFileContent();
   if (!fileData) {
@@ -96,9 +96,9 @@ async function testScript() {
 
       log(
         "\nvbook-ext: Response:\n" +
-          `status: ${rsp.body.status}\n` +
-          `log: ${rsp.body.log}\n` +
-          `result: ${JSON.stringify(JSON.parse(rsp.body.result), null, 2)}`
+          `result: ${JSON.stringify(JSON.parse(rsp.body.result), null, 2)}\n` +
+          `\nlog: ${rsp.body.log}\n` +
+          `status: ${rsp.body.status}\n`
       );
     } catch (err) {
       log(`vbook-ext: ${err}`);
