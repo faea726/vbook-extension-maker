@@ -90,8 +90,7 @@ async function testScript() {
     const rspStr = Buffer.concat(chunks).toString("utf-8");
     try {
       const rsp = parseHttpResponse(rspStr);
-      log("\nvbook-ext: Response:\n");
-      log(JSON.stringify(rsp.body, null, 2));
+      log("\nvbook-ext: Response:\n\n", JSON.stringify(rsp.body, null, 2));
     } catch (err) {
       log(`vbook-ext: ${err}`);
       log(`vbook-ext: Response:\n\n${rspStr}`);

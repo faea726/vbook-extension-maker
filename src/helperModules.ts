@@ -84,7 +84,7 @@ async function setURL(scriptPath: string) {
   const normalizedUrl = normalizeHost(url);
 
   setValue("appIP", normalizedUrl, scriptPath);
-  log(`vbook-ext: Vbook App IP: ${normalizedUrl}`);
+  log("vbook-ext: Vbook App IP:", normalizedUrl);
   return normalizedUrl;
 }
 
@@ -189,7 +189,7 @@ function runLocalServer(port: number, scriptPath: string): http.Server {
   });
 
   server.listen(port, () => {
-    log(`vbook-ext: Server listening on port ${port}`);
+    log("vbook-ext: Server listening on port", port);
   });
   return server;
 }
@@ -204,8 +204,8 @@ function getOutputChannel(): vscode.OutputChannel {
   return outputChannel;
 }
 
-function log(message: string) {
-  getOutputChannel().appendLine(message);
+function log(...args: any[]) {
+  getOutputChannel().appendLine(args.map(String).join(" "));
 }
 
 function parseHttpResponse(response: string): {

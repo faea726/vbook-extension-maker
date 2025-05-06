@@ -29,7 +29,7 @@ async function installExtension() {
   }
 
   try {
-    log(`vbook-ext: Installing to: ${appIP}`);
+    log("vbook-ext: Installing to:", appIP);
     await fetch(`${appIP}/install`, {
       method: "GET",
       headers: {

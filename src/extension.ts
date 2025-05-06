@@ -1,12 +1,11 @@
 import * as vscode from "vscode";
 import { generateProject } from "./projectGenerator";
 import { testScript } from "./scriptTester";
-import { getOutputChannel, log } from "./helperModules";
+import { log } from "./helperModules";
 import { buildExtension } from "./extenstionBuilder";
 import { installExtension } from "./extensionInstaller";
 
 export function activate(context: vscode.ExtensionContext) {
-  getOutputChannel();
   log("vbook-ext: actived!");
 
   // Create project with template
