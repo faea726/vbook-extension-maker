@@ -2,15 +2,19 @@
 
 All notable changes to the "vbook-extension-maker" extension will be documented in this file.
 
+## 0.1.1
+
+- Handle all response body.
+
 ## 0.1.0
 
-- Show logs (Console.log)
+- Show logs (Console.log).
 - Handle exceptions.
-- Relative root path
+- Relative root path.
 
 ## 0.0.3
 
-- Save previous input
+- Save previous input.
 
 ## 0.0.2
 
