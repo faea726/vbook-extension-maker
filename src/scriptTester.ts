@@ -90,22 +90,8 @@ async function testScript() {
     const rspStr = Buffer.concat(chunks).toString("utf-8");
     try {
       const rsp = parseHttpResponse(rspStr);
-      if (rsp.body.status !== 0) {
-        log(
-          "\nvbook-ext: Response:\n" +
-            `exception: ${rsp.body.exception}\n` +
-            `\nlog: ${rsp.body.log}\n` +
-            `status: ${rsp.body.status}\n`
-        );
-        return;
-      }
-
-      log(
-        "\nvbook-ext: Response:\n" +
-          `result: ${JSON.stringify(JSON.parse(rsp.body.result), null, 2)}\n` +
-          `\nlog: ${rsp.body.log}\n` +
-          `status: ${rsp.body.status}\n`
-      );
+      log("\nvbook-ext: Response:\n");
+      log(JSON.stringify(rsp.body, null, 2));
     } catch (err) {
       log(`vbook-ext: ${err}`);
       log(`vbook-ext: Response:\n\n${rspStr}`);

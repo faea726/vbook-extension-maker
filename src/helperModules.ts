@@ -230,7 +230,7 @@ function parseHttpResponse(response: string): {
 
   let body: any;
   try {
-    body = JSON.parse(bodyPart);
+    body = deepParseJSONStrings(bodyPart);
   } catch (e) {
     body = {
       error: "Invalid JSON body",
@@ -243,6 +243,30 @@ function parseHttpResponse(response: string): {
     headers,
     body,
   };
+}
+function deepParseJSONStrings(input: any): any {
+  if (typeof input === "string") {
+    try {
+      const parsed = JSON.parse(input);
+      return typeof parsed === "object" && parsed !== null
+        ? deepParseJSONStrings(parsed)
+        : parsed;
+    } catch {
+      return input;
+    }
+  }
+
+  if (Array.isArray(input)) {
+    return input.map(deepParseJSONStrings);
+  }
+
+  if (input && typeof input === "object") {
+    return Object.fromEntries(
+      Object.entries(input).map(([k, v]) => [k, deepParseJSONStrings(v)])
+    );
+  }
+
+  return input;
 }
 
 export {
