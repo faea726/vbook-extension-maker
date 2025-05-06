@@ -6,9 +6,6 @@ All notable changes to the "vbook-extension-maker" extension will be documented 
 
 - Show logs (Console.log)
 - Handle exceptions.
-
-## 0.0.3-1
-
 - Relative root path
 
 ## 0.0.3
