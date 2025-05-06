@@ -88,9 +88,23 @@ async function testScript() {
     server.close();
 
     const rspStr = Buffer.concat(chunks).toString("utf-8");
+
     try {
-      const rsp = parseHttpResponse(rspStr);
-      log("\nvbook-ext: Response:\n\n", JSON.stringify(rsp.body, null, 2));
+      const body = parseHttpResponse(rspStr).body;
+
+      log("\nResponse:");
+
+      for (const [key, value] of Object.entries(body)) {
+        if (typeof value === "object") {
+          log(`\n${key}:`, JSON.stringify(value, null, 2));
+        } else {
+          if (value) {
+            log(`\n${key}:`, value);
+          }
+        }
+      }
+
+      log("\nvbook-ext: Done");
     } catch (err) {
       log(`vbook-ext: ${err}`);
       log(`vbook-ext: Response:\n\n${rspStr}`);
