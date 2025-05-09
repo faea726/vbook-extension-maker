@@ -262,7 +262,7 @@ function deepParseJSONStrings(input: any): any {
 
   if (input && typeof input === "object") {
     return Object.fromEntries(
-      Object.entries(input).map(([k, v]) => [k, deepParseJSONStrings(v)])
+      Object.entries(input).map(([k, v]) => [k, deepParseJSONStrings(v)]),
     );
   }
 

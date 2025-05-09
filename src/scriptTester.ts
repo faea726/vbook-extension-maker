@@ -71,7 +71,7 @@ async function testScript() {
     () => {
       log(`vbook-ext: Connected to vbook: ${_url.hostname}:${_url.port}`);
       client.write(request);
-    }
+    },
   );
 
   let chunks: Buffer[] = [];

@@ -15,7 +15,7 @@ async function generateProject() {
 
   if (!projectName) {
     vscode.window.showErrorMessage(
-      "Project creation cancelled. No name was given."
+      "Project creation cancelled. No name was given.",
     );
     return;
   }
@@ -35,7 +35,7 @@ async function generateProject() {
 
   if (fs.existsSync(destinationPath)) {
     vscode.window.showErrorMessage(
-      `A folder named "${projectName}" already exists.`
+      `A folder named "${projectName}" already exists.`,
     );
     return;
   }
@@ -43,7 +43,7 @@ async function generateProject() {
   try {
     copyDirectory(templatePath, destinationPath);
     vscode.window.showInformationMessage(
-      `Project "${projectName}" created successfully!`
+      `Project "${projectName}" created successfully!`,
     );
 
     const uri = vscode.Uri.file(destinationPath);

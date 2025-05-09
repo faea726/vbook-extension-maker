@@ -11,28 +11,28 @@ export function activate(context: vscode.ExtensionContext) {
   // Create project with template
   const createProjectCmd = vscode.commands.registerCommand(
     "vbook-extension-maker.createProject",
-    generateProject
+    generateProject,
   );
   context.subscriptions.push(createProjectCmd);
 
   // Test script
   const testScriptCmd = vscode.commands.registerCommand(
     "vbook-extension-maker.testScript",
-    testScript
+    testScript,
   );
   context.subscriptions.push(testScriptCmd);
 
   // Build extension
   const buildExtensionCmd = vscode.commands.registerCommand(
     "vbook-extension-maker.buildExtension",
-    buildExtension
+    buildExtension,
   );
   context.subscriptions.push(buildExtensionCmd);
 
   // Install extension
   const installExtensionCmd = vscode.commands.registerCommand(
     "vbook-extension-maker.installExtension",
-    installExtension
+    installExtension,
   );
   context.subscriptions.push(installExtensionCmd);
 }
