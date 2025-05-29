@@ -32,7 +32,14 @@ async function testScript() {
     return;
   }
 
-  const _url = new URL(appIP);
+  var _url: URL;
+  try {
+    _url = new URL(appIP);
+  } catch (e) {
+    log(`vbook-ext: Invalid App IP: ${appIP}`);
+    return;
+  }
+
   const hostParts = _url.hostname.split(".");
   const itf = `${hostParts[0]}.${hostParts[1]}.`;
 
@@ -118,6 +125,9 @@ async function testScript() {
 }
 
 function getLocalIP(itf: string, port: number): string | null {
+  if (itf.startsWith("172.") || itf.startsWith("10.")) {
+    itf = "192.168."; // Emulator
+  }
   const interfaces = os.networkInterfaces();
 
   for (const name of Object.keys(interfaces)) {
