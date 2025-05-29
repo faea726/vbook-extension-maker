@@ -2,6 +2,10 @@
 
 All notable changes to the "vbook-extension-maker" extension will be documented in this file.
 
+## 0.1.2
+
+- Handle emulator IP.
+
 ## 0.1.1
 
 - Handle all response body.
