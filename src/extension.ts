@@ -4,9 +4,11 @@ import { testScript } from "./scriptTester";
 import { log } from "./helperModules";
 import { buildExtension } from "./extenstionBuilder";
 import { installExtension } from "./extensionInstaller";
+import { checkForUpdate } from "./updateChecker";
 
 export function activate(context: vscode.ExtensionContext) {
   log("vbook-ext: actived!");
+  checkForUpdate();
 
   // Create project with template
   const createProjectCmd = vscode.commands.registerCommand(

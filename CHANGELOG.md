@@ -5,6 +5,7 @@ All notable changes to the "vbook-extension-maker" extension will be documented 
 ## 0.1.2
 
 - Handle emulator IP.
+- Check new release.
 
 ## 0.1.1
 
