@@ -2,6 +2,11 @@
 
 All notable changes to the "vbook-extension-maker" extension will be documented in this file.
 
+## 0.1.3
+
+- Fix IP interface
+- Add Binary (build, test, install)
+
 ## 0.1.2
 
 - Handle emulator IP.

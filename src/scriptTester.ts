@@ -40,9 +40,6 @@ async function testScript() {
     return;
   }
 
-  const hostParts = _url.hostname.split(".");
-  const itf = `${hostParts[0]}.${hostParts[1]}.`;
-
   const serverPort = Number(_url.port) - 10;
 
   const params = await setParams(fileData.name, fileData.path);
@@ -52,7 +49,7 @@ async function testScript() {
   // log(`vbook-ext: extName: ${extName}`);
 
   const data = {
-    ip: getLocalIP(itf, serverPort),
+    ip: getLocalIP(serverPort),
     root: `${extName}/src`,
     language: "javascript",
     script: fileData.content,
@@ -124,19 +121,41 @@ async function testScript() {
   });
 }
 
-function getLocalIP(itf: string, port: number): string | null {
-  if (itf.startsWith("172.") || itf.startsWith("10.")) {
-    itf = "192.168."; // Emulator
-  }
+function getLocalIP(port: number): string | null {
   const interfaces = os.networkInterfaces();
 
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name]!) {
-      const ip = iface.address;
+  // Helper to check if IP is private LAN
+  const isPrivate = (ip: string): boolean => {
+    return (
+      ip.startsWith("10.") ||
+      ip.startsWith("192.168.") ||
+      (ip.startsWith("172.") &&
+        (() => {
+          const second = parseInt(ip.split(".")[1], 10);
+          return second >= 16 && second <= 31;
+        })())
+    );
+  };
 
-      if (iface.family === "IPv4" && !iface.internal && ip.startsWith(itf)) {
-        const localIp = `http://${ip}:${port}`;
-        log(`vbook-ext: Local IP: ${localIp}`);
+  // Prefer private LAN IPs
+  for (const addrs of Object.values(interfaces)) {
+    if (!addrs) continue;
+    for (const addr of addrs) {
+      if (addr.family === "IPv4" && !addr.internal && isPrivate(addr.address)) {
+        const localIp = `http://${addr.address}:${port}`;
+        log(`vbook-ext: Local IP (LAN): ${localIp}`);
+        return localIp;
+      }
+    }
+  }
+
+  // Fallback: any non-internal IPv4
+  for (const addrs of Object.values(interfaces)) {
+    if (!addrs) continue;
+    for (const addr of addrs) {
+      if (addr.family === "IPv4" && !addr.internal) {
+        const localIp = `http://${addr.address}:${port}`;
+        log(`vbook-ext: Local IP (fallback): ${localIp}`);
         return localIp;
       }
     }
