@@ -54,7 +54,24 @@ func TestScript(filePath string, fileContent string) error {
 	serverPort := port - 10
 
 	// Params
-	params := Prompt("Enter params (comma-separated)")
+	scriptName := filepath.Base(filePath) // e.g. "myScript.js"
+
+	savedParams := GetValue(scriptName, filePath)
+	var params string
+
+	if savedParams != nil {
+		fmt.Printf("Current params for %s: %s\n", scriptName, savedParams)
+		choice := Prompt("Press Enter to reuse, or type new params (comma-separated)")
+		if choice != "" {
+			params = choice
+			SetValue(scriptName, params, filePath)
+		} else {
+			params = fmt.Sprint(savedParams)
+		}
+	} else {
+		params = Prompt("Enter params (comma-separated)")
+		SetValue(scriptName, params, filePath)
+	}
 	Log("vbook-ext: Params:", params)
 
 	extName := filepath.Base(filepath.Join(filePath, "../../"))
