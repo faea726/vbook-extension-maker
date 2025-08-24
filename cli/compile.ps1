@@ -1,7 +1,7 @@
 # build.ps1
 $ErrorActionPreference = "Stop"
 
-$AppName = "vbook-ext"
+$AppName = "vbook-cli"
 $OutputDir = "build"
 
 # List of target platforms (OS/ARCH)

@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -199,15 +200,30 @@ func DeepParseJSON(input string) any {
 func PrettyPrintJSON(v any, indent string) {
 	switch val := v.(type) {
 	case map[string]any:
-		for k, sub := range val {
-			fmt.Printf("%s%s:\n", indent, k)
-			PrettyPrintJSON(sub, indent+"  ")
+		// Print keys in sorted order for consistency
+		keys := make([]string, 0, len(val))
+		for k := range val {
+			keys = append(keys, k)
 		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			fmt.Printf("%s%s:\n", indent, k)
+			PrettyPrintJSON(val[k], indent+"  ")
+		}
+
 	case []any:
+		if len(val) == 0 {
+			fmt.Printf("%s[]\n", indent)
+			return
+		}
 		for i, sub := range val {
 			fmt.Printf("%s[%d]:\n", indent, i)
 			PrettyPrintJSON(sub, indent+"  ")
 		}
+
+	case string:
+		fmt.Printf("%s%q\n", indent, val) // print with quotes
+
 	default:
 		fmt.Printf("%s%v\n", indent, val)
 	}

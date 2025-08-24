@@ -124,7 +124,6 @@ func TestScript(filePath string, fileContent string) error {
 	rspStr := buf.String()
 
 	parsed := ParseHttpResponse(rspStr)
-	Log(parsed.Body)
 
 	Log("\nResponse:")
 	PrettyPrintJSON(parsed.Body, "")
