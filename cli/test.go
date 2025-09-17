@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -46,6 +47,16 @@ func TestScript(filePath string, fileContent string) error {
 		return err
 	}
 
+	// get first 3 prefix from appIP
+	var interfaceIP string
+	if _url.Hostname() != "" {
+		// test if hostname is ipv4
+		if net.ParseIP(_url.Hostname()).To4() != nil {
+			interfaceIP = ""
+		}
+		interfaceIP = strings.Split(_url.Hostname(), ".")[0] + "." + strings.Split(_url.Hostname(), ".")[1] + "." + strings.Split(_url.Hostname(), ".")[2]
+	}
+
 	// Server port = app port - 10
 	port := 8080
 	if _url.Port() != "" {
@@ -77,7 +88,7 @@ func TestScript(filePath string, fileContent string) error {
 	extName := filepath.Base(filepath.Join(filePath, "../../"))
 
 	data := map[string]any{
-		"ip":       GetLocalIP(serverPort),
+		"ip":       GetLocalIP(serverPort, interfaceIP),
 		"root":     fmt.Sprintf("%s/src", extName),
 		"language": "javascript",
 		"script":   fileContent,
@@ -150,53 +161,91 @@ func TestScript(filePath string, fileContent string) error {
 }
 
 // -------------------- Local IP Helper --------------------
-func GetLocalIP(port int) string {
+func GetLocalIP(port int, interfaceIP ...string) string {
+	var prefix string
+	if len(interfaceIP) > 0 {
+		prefix = strings.TrimSpace(interfaceIP[0])
+	}
+
+	isPrivate := func(ip string) bool {
+		if strings.HasPrefix(ip, "10.") || strings.HasPrefix(ip, "192.168.") {
+			return true
+		}
+		if strings.HasPrefix(ip, "172.") {
+			parts := strings.Split(ip, ".")
+			if len(parts) < 2 {
+				return false
+			}
+			second, _ := strconv.Atoi(parts[1])
+			return second >= 16 && second <= 31
+		}
+		return false
+	}
+
+	matchPrefix := func(ip string) bool {
+		if prefix == "" {
+			return false
+		}
+		ipParts := strings.Split(ip, ".")
+		prefParts := strings.Split(prefix, ".")
+		for i, p := range prefParts {
+			if p == "" {
+				continue
+			}
+			if ipParts[i] != p {
+				return false
+			}
+		}
+		return true
+	}
+
+	type candidate struct {
+		ip    string
+		score int
+	}
+
+	var candidates []candidate
+
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return ""
 	}
 
-	isPrivate := func(ip string) bool {
-		return strings.HasPrefix(ip, "10.") ||
-			strings.HasPrefix(ip, "192.168.") ||
-			(strings.HasPrefix(ip, "172.") && func() bool {
-				parts := strings.Split(ip, ".")
-				if len(parts) < 2 {
-					return false
-				}
-				second := 0
-				fmt.Sscanf(parts[1], "%d", &second)
-				return second >= 16 && second <= 31
-			}())
-	}
-
-	// Prefer private LAN
 	for _, iface := range ifaces {
 		addrs, _ := iface.Addrs()
 		for _, addr := range addrs {
 			ip, _, _ := net.ParseCIDR(addr.String())
-			if ip.To4() != nil && !ip.IsLoopback() && isPrivate(ip.String()) {
-				localIp := fmt.Sprintf("http://%s:%d", ip.String(), port)
-				Log("vbook-ext: Local IP (LAN):", localIp)
-				return localIp
+			if ip == nil || ip.To4() == nil || ip.IsLoopback() {
+				continue
 			}
+
+			ipStr := ip.String()
+			score := 0
+			if isPrivate(ipStr) {
+				score += 10
+			}
+			if matchPrefix(ipStr) {
+				score += 5
+			}
+			candidates = append(candidates, candidate{ip: ipStr, score: score})
 		}
 	}
 
-	// Fallback: any non-loopback IPv4
-	for _, iface := range ifaces {
-		addrs, _ := iface.Addrs()
-		for _, addr := range addrs {
-			ip, _, _ := net.ParseCIDR(addr.String())
-			if ip.To4() != nil && !ip.IsLoopback() {
-				localIp := fmt.Sprintf("http://%s:%d", ip.String(), port)
-				Log("vbook-ext: Local IP (fallback):", localIp)
-				return localIp
-			}
+	if len(candidates) == 0 {
+		return ""
+	}
+
+	// pick highest score
+	best := candidates[0]
+	for _, c := range candidates[1:] {
+		if c.score > best.score {
+			best = c
 		}
 	}
 
-	return ""
+	localIp := fmt.Sprintf("http://%s:%d", best.ip, port)
+	fmt.Println("vbook-ext: Local IP (chosen):", localIp)
+	return localIp
 }
 
 // -------------------- Get Opening File Content --------------------
