@@ -40,6 +40,12 @@ async function testScript() {
     return;
   }
 
+  const host = _url.hostname;
+  let interfaceIP = host;
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
+    const parts = host.split(".");
+    interfaceIP = `${parts[0]}.${parts[1]}.${parts[2]}`; // e.g. "192.168"
+  }
   const serverPort = Number(_url.port) - 10;
 
   const params = await setParams(fileData.name, fileData.path);
@@ -49,7 +55,7 @@ async function testScript() {
   // log(`vbook-ext: extName: ${extName}`);
 
   const data = {
-    ip: getLocalIP(serverPort),
+    ip: getLocalIP(serverPort, interfaceIP),
     root: `${extName}/src`,
     language: "javascript",
     script: fileData.content,
@@ -121,47 +127,53 @@ async function testScript() {
   });
 }
 
-function getLocalIP(port: number): string | null {
+function getLocalIP(port: number, interfaceIP?: string): string | null {
   const interfaces = os.networkInterfaces();
+  const prefix = interfaceIP?.trim();
 
-  // Helper to check if IP is private LAN
-  const isPrivate = (ip: string): boolean => {
-    return (
-      ip.startsWith("10.") ||
-      ip.startsWith("192.168.") ||
-      (ip.startsWith("172.") &&
-        (() => {
-          const second = parseInt(ip.split(".")[1], 10);
-          return second >= 16 && second <= 31;
-        })())
-    );
+  const isPrivate = (ip: string): boolean =>
+    ip.startsWith("10.") ||
+    ip.startsWith("192.168.") ||
+    (ip.startsWith("172.") &&
+      (() => {
+        const second = parseInt(ip.split(".")[1], 10);
+        return second >= 16 && second <= 31;
+      })());
+
+  const matchPrefix = (ip: string): boolean => {
+    if (!prefix) {return false;}
+    if (!/^\d+\.\d+\.\d+\.\d+$/.test(ip)) {return false;}
+    const ipParts = ip.split(".");
+    const prefParts = prefix.split(".");
+    return prefParts.every((p, i) => ipParts[i] === p);
   };
 
-  // Prefer private LAN IPs
+  // Collect all IPv4 addresses
+  const candidates: { ip: string; score: number }[] = [];
+
   for (const addrs of Object.values(interfaces)) {
-    if (!addrs) continue;
+    if (!addrs) {continue;}
     for (const addr of addrs) {
-      if (addr.family === "IPv4" && !addr.internal && isPrivate(addr.address)) {
-        const localIp = `http://${addr.address}:${port}`;
-        log(`vbook-ext: Local IP (LAN): ${localIp}`);
-        return localIp;
-      }
+      if (addr.family !== "IPv4" || addr.internal) {continue;}
+
+      let score = 0;
+      if (isPrivate(addr.address)) {score += 10;} // prefer private LAN
+      if (matchPrefix(addr.address)) {score += 5;} // prefer prefix
+      // The higher the score, the more preferred
+
+      candidates.push({ ip: addr.address, score });
     }
   }
 
-  // Fallback: any non-internal IPv4
-  for (const addrs of Object.values(interfaces)) {
-    if (!addrs) continue;
-    for (const addr of addrs) {
-      if (addr.family === "IPv4" && !addr.internal) {
-        const localIp = `http://${addr.address}:${port}`;
-        log(`vbook-ext: Local IP (fallback): ${localIp}`);
-        return localIp;
-      }
-    }
-  }
+  if (candidates.length === 0) {return null;}
 
-  return null;
+  // Sort candidates by score descending
+  candidates.sort((a, b) => b.score - a.score);
+
+  const chosen = candidates[0].ip;
+  const localIp = `http://${chosen}:${port}`;
+  log(`vbook-ext: Local IP (chosen): ${localIp}`);
+  return localIp;
 }
 
 function getOpeningFileContent(): {
