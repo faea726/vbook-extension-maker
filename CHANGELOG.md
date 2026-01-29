@@ -2,6 +2,10 @@
 
 All notable changes to the "vbook-extension-maker" extension will be documented in this file.
 
+## 0.1.5
+
+- Fix params
+
 ## 0.1.4
 
 - Fix IP interface

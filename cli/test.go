@@ -94,17 +94,16 @@ func TestScript(filePath string, fileContent string) error {
 		"script":   fileContent,
 	}
 
-	if strings.Contains(params, ",") {
-		parts := strings.Split(params, ",")
-		for i := range parts {
-			parts[i] = strings.TrimSpace(parts[i])
+	input := []any{}
+
+	for p := range strings.SplitSeq(params, ",") {
+		p = strings.TrimSpace(p)
+		if p != "" {
+			input = append(input, p)
 		}
-		data["input"] = []any{parts}
-	} else if strings.TrimSpace(params) != "" {
-		data["input"] = []any{strings.TrimSpace(params)}
-	} else {
-		data["input"] = []any{}
 	}
+
+	data["input"] = input
 
 	// Build HTTP request manually
 	jsonBytes, _ := json.Marshal(data)

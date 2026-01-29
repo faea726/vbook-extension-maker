@@ -60,7 +60,7 @@ async function testScript() {
     language: "javascript",
     script: fileData.content,
     input: params?.trim().includes(",")
-      ? [params.split(",").map((p) => p.trim())]
+      ? params.split(",").map((p) => p.trim())
       : [params?.trim()],
   };
 
@@ -141,8 +141,12 @@ function getLocalIP(port: number, interfaceIP?: string): string | null {
       })());
 
   const matchPrefix = (ip: string): boolean => {
-    if (!prefix) {return false;}
-    if (!/^\d+\.\d+\.\d+\.\d+$/.test(ip)) {return false;}
+    if (!prefix) {
+      return false;
+    }
+    if (!/^\d+\.\d+\.\d+\.\d+$/.test(ip)) {
+      return false;
+    }
     const ipParts = ip.split(".");
     const prefParts = prefix.split(".");
     return prefParts.every((p, i) => ipParts[i] === p);
@@ -152,20 +156,30 @@ function getLocalIP(port: number, interfaceIP?: string): string | null {
   const candidates: { ip: string; score: number }[] = [];
 
   for (const addrs of Object.values(interfaces)) {
-    if (!addrs) {continue;}
+    if (!addrs) {
+      continue;
+    }
     for (const addr of addrs) {
-      if (addr.family !== "IPv4" || addr.internal) {continue;}
+      if (addr.family !== "IPv4" || addr.internal) {
+        continue;
+      }
 
       let score = 0;
-      if (isPrivate(addr.address)) {score += 10;} // prefer private LAN
-      if (matchPrefix(addr.address)) {score += 5;} // prefer prefix
+      if (isPrivate(addr.address)) {
+        score += 10;
+      } // prefer private LAN
+      if (matchPrefix(addr.address)) {
+        score += 5;
+      } // prefer prefix
       // The higher the score, the more preferred
 
       candidates.push({ ip: addr.address, score });
     }
   }
 
-  if (candidates.length === 0) {return null;}
+  if (candidates.length === 0) {
+    return null;
+  }
 
   // Sort candidates by score descending
   candidates.sort((a, b) => b.score - a.score);
